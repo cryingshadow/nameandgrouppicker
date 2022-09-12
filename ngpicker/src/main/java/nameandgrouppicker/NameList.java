@@ -17,7 +17,10 @@ public class NameList extends ArrayList<String> {
     public NameList(final BufferedReader reader) throws IOException {
         String line = reader.readLine();
         while (line != null) {
-            this.add(line.strip());
+            final String stripped = line.strip();
+            if (!stripped.isBlank() && !stripped.startsWith("//")) {
+                this.add(stripped);
+            }
             line = reader.readLine();
         }
     }

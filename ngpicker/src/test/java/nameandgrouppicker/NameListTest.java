@@ -17,10 +17,19 @@ public class NameListTest {
     @Test
     public void constructNameListWithBufferedReaderTest() throws IOException {
         final List<String> testList = Arrays.asList("Alice", "Bob", "Charly");
-        final NameList list = new NameList(new BufferedReader(new StringReader("Alice\nBob\nCharly")));
-        Assert.assertEquals(list.size(), 3);
-        Assert.assertTrue(list.containsAll(testList));
-        Assert.assertTrue(testList.containsAll(list));
+        final String[] testInput =
+            new String[] {
+                "Alice\nBob\nCharly",
+                " Alice\nBob \n Charly ",
+                "Alice\nBob\n//comment\nCharly",
+                "Alice \n Bob\n // comment \nCharly",
+            };
+        for (final String testString : testInput) {
+            final NameList list = new NameList(new BufferedReader(new StringReader(testString)));
+            Assert.assertEquals(list.size(), 3);
+            Assert.assertTrue(list.containsAll(testList));
+            Assert.assertTrue(testList.containsAll(list));
+        }
     }
 
     @Test

@@ -1,5 +1,6 @@
 package nameandgrouppicker;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -94,11 +95,36 @@ public class GroupList extends ArrayList<NameList> {
         }
     }
 
+    private static List<List<String>> parseGroups(final BufferedReader reader) throws IOException {
+        final List<List<String>> result = new LinkedList<List<String>>();
+        List<String> currentGroup = Collections.emptyList();
+        String line = reader.readLine();
+        while (line != null) {
+            final String stripped = line.strip();
+            if (!stripped.isBlank() && !stripped.startsWith("//")) {
+                if (stripped.matches("Gruppe \\d+:")) {
+                    result.add(currentGroup);
+                    currentGroup = new LinkedList<String>();
+                } else {
+                    currentGroup.add(stripped);
+                }
+            }
+            line = reader.readLine();
+        }
+        result.add(currentGroup);
+        result.remove(0);
+        return result;
+    }
+
     public final int maxGroupSize;
 
     public final int minGroupSize;
 
     private final Random random;
+
+    public GroupList(final BufferedReader reader, final int minGroupSize, final int maxGroupSize) throws IOException {
+        this(GroupList.parseGroups(reader), minGroupSize, maxGroupSize);
+    }
 
     public GroupList(final Collection<? extends List<String>> groups, final int minGroupSize, final int maxGroupSize) {
         if (maxGroupSize < minGroupSize) {

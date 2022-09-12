@@ -1,5 +1,6 @@
 package nameandgrouppicker;
 
+import java.io.*;
 import java.util.*;
 
 import org.testng.*;
@@ -35,6 +36,25 @@ public class GroupListTest {
         Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(2, 1));
         Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(-1, 1));
         Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(0, 1));
+    }
+
+    @Test
+    public void constructGroupListWithBufferedReaderTest() throws IOException {
+        final String[] testInput =
+            new String[] {
+                "Gruppe 1:\nAlice\nBob\nCharly\n\nGruppe 2:\nJim\nJack\nJohnnie\n\nGruppe 3:\nZaphod\nTrillian",
+                " Gruppe 1: \n Alice \n Bob\nCharly \n\n Gruppe 2:\nJim\n Jack \nJohnnie\n\nGruppe 3: \nZaphod\nTrillian\n",
+                "Gruppe 1:\nAlice\n\nBob\nCharly\n\nGruppe 2:\n\nJim\nJack\nJohnnie\n\nGruppe 3:\nZaphod\nTrillian\n\n",
+                "Gruppe 1:\nAlice\nBob\nCharly\n\nGruppe 2:\nJim\nJack\nJohnnie\n\nGruppe 3:\n//comment\nZaphod\nTrillian\n\n",
+                "Gruppe 1:\nAlice\nBob\nCharly\n\nGruppe 2:\nJim\nJack\n // comment \n\nJohnnie\n\nGruppe 3:\nZaphod\nTrillian\n\n",
+                "Gruppe 10:\nAlice\nBob\nCharly\n\nGruppe 23:\nJim\nJack\nJohnnie\n\nGruppe 666:\nZaphod\nTrillian"
+            };
+        for (final String testString : testInput) {
+            final GroupList list = new GroupList(new BufferedReader(new StringReader(testString)), 2, 3);
+            Assert.assertEquals(list.size(), 3);
+            Assert.assertTrue(list.containsAll(GroupListTest.TEST_GROUPS));
+            Assert.assertTrue(GroupListTest.TEST_GROUPS.containsAll(list));
+        }
     }
 
     @Test

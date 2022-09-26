@@ -12,6 +12,20 @@ dependencies {
     testImplementation 'org.testng:testng:7.4.0'
 }
 
+application {
+    mainClass = 'nameandgrouppicker.Main'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'nameandgrouppicker.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    baseName = 'nameandgrouppicker'
+}
+
 tasks.named('test') {
     useTestNG()
 }

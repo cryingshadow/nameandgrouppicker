@@ -29,7 +29,8 @@ public class Main {
         }
         final File nameListFile = new File(space.<String>get("names"));
         try (
-            BufferedReader reader = new BufferedReader(new FileReader(nameListFile));
+            BufferedReader reader =
+                new BufferedReader(new InputStreamReader(new FileInputStream(nameListFile), "UTF-8"));
             BufferedWriter writer = Main.getOutput(space);
         ) {
             writer.write(new NameList(reader).getRandomName());
@@ -39,8 +40,8 @@ public class Main {
         }
     }
 
-    private static BufferedWriter getOutput(final Namespace space) {
-        return new BufferedWriter(new OutputStreamWriter(System.out));
+    private static BufferedWriter getOutput(final Namespace space) throws UnsupportedEncodingException {
+        return new BufferedWriter(new OutputStreamWriter(System.out, "Cp850"));
     }
 
 }

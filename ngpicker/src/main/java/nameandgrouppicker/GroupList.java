@@ -8,6 +8,12 @@ public class GroupList extends ArrayList<NameList> {
 
     private static final long serialVersionUID = -3601654371182069051L;
 
+    public static GroupList createFromNameList(final Collection<String> names, final int count) {
+        final GroupList result = new GroupList();
+        GroupList.moveNamesToGroupsEvenly(new NameList(names), count, result);
+        return result;
+    }
+
     public static GroupList createFromNameList(
         final Collection<String> names,
         final int minGroupSize,
@@ -50,7 +56,12 @@ public class GroupList extends ArrayList<NameList> {
         }
         final GroupList result = new GroupList(minGroupSize, maxGroupSize);
         final NameList remainingNames =
-            GroupList.fillFixedSizeGroupsAndReturnRemainingNames(names, numOfMaxSizeGroups, maxGroupSize, result);
+            GroupList.fillFixedSizeGroupsAndReturnRemainingNames(
+                names,
+                numOfMaxSizeGroups,
+                maxGroupSize,
+                result
+            );
         GroupList.moveNamesToGroupsEvenly(remainingNames, numOfSmallerGroups, result);
         return result;
     }
@@ -116,21 +127,41 @@ public class GroupList extends ArrayList<NameList> {
         return result;
     }
 
-    public final int maxGroupSize;
+    public final Optional<Integer> maxGroupSize;
 
-    public final int minGroupSize;
+    public final Optional<Integer> minGroupSize;
 
     private final Random random;
 
-    public GroupList(final BufferedReader reader, final int minGroupSize, final int maxGroupSize) throws IOException {
-        this(GroupList.parseGroups(reader), minGroupSize, maxGroupSize);
+    public GroupList() {
+        this(Collections.emptyList(), Optional.empty(), Optional.empty());
     }
 
-    public GroupList(final Collection<? extends List<String>> groups, final int minGroupSize, final int maxGroupSize) {
-        if (maxGroupSize < minGroupSize) {
+    public GroupList(
+        final BufferedReader groupsReader,
+        final int minGroupSize,
+        final int maxGroupSize
+    ) throws IOException {
+        this(GroupList.parseGroups(groupsReader), Optional.of(minGroupSize), Optional.of(maxGroupSize));
+    }
+
+    public GroupList(
+        final Collection<? extends List<String>> groups,
+        final int minGroupSize,
+        final int maxGroupSize
+    ) {
+        this(groups, Optional.of(minGroupSize), Optional.of(maxGroupSize));
+    }
+
+    public GroupList(
+        final Collection<? extends List<String>> groups,
+        final Optional<Integer> minGroupSize,
+        final Optional<Integer> maxGroupSize
+    ) {
+        if (maxGroupSize.isPresent() && minGroupSize.isPresent() && maxGroupSize.get() < minGroupSize.get()) {
             throw new IllegalArgumentException("Minimum group size cannot be bigger than maximum group size!");
         }
-        if (minGroupSize < 1) {
+        if (minGroupSize.isPresent() && minGroupSize.get() < 1) {
             throw new IllegalArgumentException("Minimum group size must be positive!");
         }
         this.minGroupSize = minGroupSize;
@@ -138,7 +169,10 @@ public class GroupList extends ArrayList<NameList> {
         this.random = new Random();
         for (final List<String> group : groups) {
             final int groupSize = group.size();
-            if (groupSize < minGroupSize || groupSize > maxGroupSize) {
+            if (
+                (minGroupSize.isPresent() && groupSize < minGroupSize.get())
+                || (maxGroupSize.isPresent() && groupSize > maxGroupSize.get())
+            ) {
                 throw new IllegalArgumentException(
                     "Specified groups must respect the minimum and maximum group sizes!"
                 );
@@ -148,7 +182,7 @@ public class GroupList extends ArrayList<NameList> {
     }
 
     public GroupList(final int minGroupSize, final int maxGroupSize) {
-        this(Collections.emptyList(), minGroupSize, maxGroupSize);
+        this(Collections.emptyList(), Optional.of(minGroupSize), Optional.of(maxGroupSize));
     }
 
     public NameList getRandomGroup() {

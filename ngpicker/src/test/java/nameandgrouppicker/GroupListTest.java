@@ -30,8 +30,8 @@ public class GroupListTest {
             final int max = testValues[i][1];
             final GroupList list = new GroupList(min, max);
             Assert.assertEquals(list.size(), 0);
-            Assert.assertEquals(list.minGroupSize, min);
-            Assert.assertEquals(list.maxGroupSize, max);
+            Assert.assertEquals(list.minGroupSize.get(), Integer.valueOf(min));
+            Assert.assertEquals(list.maxGroupSize.get(), Integer.valueOf(max));
         }
         Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(2, 1));
         Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(-1, 1));
@@ -50,7 +50,12 @@ public class GroupListTest {
                 "Gruppe 10:\nAlice\nBob\nCharly\n\nGruppe 23:\nJim\nJack\nJohnnie\n\nGruppe 666:\nZaphod\nTrillian"
             };
         for (final String testString : testInput) {
-            final GroupList list = new GroupList(new BufferedReader(new StringReader(testString)), 2, 3);
+            final GroupList list =
+                new GroupList(
+                    new BufferedReader(new StringReader(testString)),
+                    2,
+                    3
+                );
             Assert.assertEquals(list.size(), 3);
             Assert.assertTrue(list.containsAll(GroupListTest.TEST_GROUPS));
             Assert.assertTrue(GroupListTest.TEST_GROUPS.containsAll(list));
@@ -63,13 +68,34 @@ public class GroupListTest {
         Assert.assertEquals(list.size(), 3);
         Assert.assertTrue(list.containsAll(GroupListTest.TEST_GROUPS));
         Assert.assertTrue(GroupListTest.TEST_GROUPS.containsAll(list));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(GroupListTest.TEST_GROUPS, 2, 1));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(GroupListTest.TEST_GROUPS, -1, 1));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(GroupListTest.TEST_GROUPS, 0, 1));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(GroupListTest.TEST_GROUPS, 3, 3));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(GroupListTest.TEST_GROUPS, 2, 2));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(GroupListTest.TEST_GROUPS, 1, 2));
-        Assert.assertThrows(IllegalArgumentException.class, () -> new GroupList(GroupListTest.TEST_GROUPS, 3, 7));
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> new GroupList(GroupListTest.TEST_GROUPS, 2, 1)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> new GroupList(GroupListTest.TEST_GROUPS, -1, 1)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> new GroupList(GroupListTest.TEST_GROUPS, 0, 1)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> new GroupList(GroupListTest.TEST_GROUPS, 3, 3)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> new GroupList(GroupListTest.TEST_GROUPS, 2, 2)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> new GroupList(GroupListTest.TEST_GROUPS, 1, 2)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> new GroupList(GroupListTest.TEST_GROUPS, 3, 7)
+        );
     }
 
     @Test
@@ -106,8 +132,8 @@ public class GroupListTest {
             final int numOfGroups = testValues[i][2];
             final GroupList list = GroupList.createFromNameList(nameList, min, max);
             Assert.assertEquals(list.size(), numOfGroups);
-            Assert.assertEquals(list.minGroupSize, min);
-            Assert.assertEquals(list.maxGroupSize, max);
+            Assert.assertEquals(list.minGroupSize.get(), Integer.valueOf(min));
+            Assert.assertEquals(list.maxGroupSize.get(), Integer.valueOf(max));
             Assert.assertEquals(list.stream().mapToInt(List::size).sum(), nameList.size());
             final List<String> actualNames = list.stream().flatMap(List::stream).toList();
             Assert.assertTrue(actualNames.containsAll(nameList));
@@ -115,9 +141,18 @@ public class GroupListTest {
             Assert.assertTrue(list.stream().mapToInt(List::size).max().getAsInt() <= max);
             Assert.assertTrue(list.stream().mapToInt(List::size).min().getAsInt() >= min);
         }
-        Assert.assertThrows(IllegalArgumentException.class, () -> GroupList.createFromNameList(nameList, 7, 8));
-        Assert.assertThrows(IllegalArgumentException.class, () -> GroupList.createFromNameList(nameList, 3, 3));
-        Assert.assertThrows(IllegalArgumentException.class, () -> GroupList.createFromNameList(nameList, 2, 2));
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> GroupList.createFromNameList(nameList, 7, 8)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> GroupList.createFromNameList(nameList, 3, 3)
+        );
+        Assert.assertThrows(
+            IllegalArgumentException.class,
+            () -> GroupList.createFromNameList(nameList, 2, 2)
+        );
     }
 
     @Test

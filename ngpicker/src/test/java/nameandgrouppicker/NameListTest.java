@@ -24,11 +24,18 @@ public class NameListTest {
                 "Alice\nBob\n//comment\nCharly",
                 "Alice \n Bob\n // comment \nCharly",
             };
+        //TODO own test for frequencies
+//        final String testFrequency = "Alice,2\nBob,3\nCharly,1";
+//        new BufferedReader(new StringReader(testFrequency))
         for (final String testString : testInput) {
             final NameList list = new NameList(new BufferedReader(new StringReader(testString)));
             Assert.assertEquals(list.size(), 3);
             Assert.assertTrue(list.containsAll(testList));
             Assert.assertTrue(testList.containsAll(list));
+//            Assert.assertEquals(list.frequencies.size(), 3);
+//            Assert.assertEquals(list.frequencies.get("Alice"), Integer.valueOf(2));
+//            Assert.assertEquals(list.frequencies.get("Bob"), Integer.valueOf(3));
+//            Assert.assertEquals(list.frequencies.get("Charly"), Integer.valueOf(1));
         }
     }
 
@@ -61,8 +68,8 @@ public class NameListTest {
             );
         final GroupList list = new NameList(nameList).getRandomGroups(2, 3);
         Assert.assertEquals(list.size(), 5);
-        Assert.assertEquals(list.minGroupSize, 2);
-        Assert.assertEquals(list.maxGroupSize, 3);
+        Assert.assertEquals(list.minGroupSize.get(), Integer.valueOf(2));
+        Assert.assertEquals(list.maxGroupSize.get(), Integer.valueOf(3));
         Assert.assertEquals(list.stream().mapToInt(List::size).sum(), nameList.size());
         final List<String> actualNames = list.stream().flatMap(List::stream).toList();
         Assert.assertTrue(actualNames.containsAll(nameList));

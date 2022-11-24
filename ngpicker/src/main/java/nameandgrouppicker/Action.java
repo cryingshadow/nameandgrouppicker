@@ -2,6 +2,6 @@ package nameandgrouppicker;
 
 public enum Action {
 
-    PICK
+    GROUPS, PICK
 
 }

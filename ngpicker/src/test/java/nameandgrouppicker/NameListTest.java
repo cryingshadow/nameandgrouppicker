@@ -24,18 +24,11 @@ public class NameListTest {
                 "Alice\nBob\n//comment\nCharly",
                 "Alice \n Bob\n // comment \nCharly",
             };
-        //TODO own test for frequencies
-//        final String testFrequency = "Alice,2\nBob,3\nCharly,1";
-//        new BufferedReader(new StringReader(testFrequency))
         for (final String testString : testInput) {
             final NameList list = new NameList(new BufferedReader(new StringReader(testString)));
             Assert.assertEquals(list.size(), 3);
             Assert.assertTrue(list.containsAll(testList));
             Assert.assertTrue(testList.containsAll(list));
-//            Assert.assertEquals(list.frequencies.size(), 3);
-//            Assert.assertEquals(list.frequencies.get("Alice"), Integer.valueOf(2));
-//            Assert.assertEquals(list.frequencies.get("Bob"), Integer.valueOf(3));
-//            Assert.assertEquals(list.frequencies.get("Charly"), Integer.valueOf(1));
         }
     }
 
@@ -87,6 +80,16 @@ public class NameListTest {
         Assert.assertTrue(testList.contains(name));
         Assert.assertTrue(list.containsAll(testList));
         Assert.assertTrue(testList.containsAll(list));
+        final FrequencyMap frequencies = new FrequencyMap();
+        frequencies.put("Alice", 2);
+        frequencies.put("Bob", 3);
+        frequencies.put("Charly", 1);
+        final String name2 = list.getRandomName(frequencies);
+        Assert.assertTrue(testList.contains(name2));
+        Assert.assertEquals(frequencies.size(), 3);
+        Assert.assertEquals(frequencies.get("Alice"), Integer.valueOf("Alice".equals(name2) ? 3 : 2));
+        Assert.assertEquals(frequencies.get("Bob"), Integer.valueOf("Bob".equals(name2) ? 4 : 3));
+        Assert.assertEquals(frequencies.get("Charly"), Integer.valueOf("Charly".equals(name2) ? 2 : 1));
     }
 
     @Test

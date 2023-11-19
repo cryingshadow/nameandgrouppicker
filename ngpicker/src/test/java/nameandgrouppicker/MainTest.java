@@ -6,7 +6,7 @@ import java.util.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
-public class MainTest { //TODO frequencies
+public class MainTest {
 
     private static final NameList NAMES =
         new NameList(
@@ -110,6 +110,31 @@ public class MainTest { //TODO frequencies
         Assert.assertTrue(MainTest.NAMES.contains(name));
     }
 
+    @Test
+    public void randomNameFromNameListWithFrequenciesTest() throws IOException {
+        Main.main(
+            new String[] {
+                "PICK",
+                "-n", this.nameListFile.getAbsolutePath(),
+                "-f", this.frequenciesFile.getAbsolutePath()
+            }
+        );
+        final String name = this.testOut.toString().strip();
+        Assert.assertTrue(MainTest.NAMES.contains(name));
+        FrequencyMap frequencies;
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.frequenciesFile.getAbsoluteFile()))) {
+            frequencies = new FrequencyMap(reader);
+        }
+        final List<String> before = List.of("Alice", "Bob", "Charly");
+        Assert.assertEquals(frequencies.size(), before.contains(name) ? 3 : 4);
+        Assert.assertEquals(frequencies.get("Alice"), "Alice".equals(name) ? Integer.valueOf(3) : Integer.valueOf(2));
+        Assert.assertEquals(frequencies.get("Bob"), "Bob".equals(name) ? Integer.valueOf(4) : Integer.valueOf(3));
+        Assert.assertEquals(frequencies.get("Charly"), "Charly".equals(name) ? Integer.valueOf(2) : Integer.valueOf(1));
+        if (!before.contains(name)) {
+            Assert.assertEquals(frequencies.get(name), Integer.valueOf(1));
+        }
+    }
+
     @BeforeMethod
     public void setup() throws IOException {
         System.setOut(new PrintStream(this.testOut));
@@ -119,15 +144,17 @@ public class MainTest { //TODO frequencies
         locateTmp.delete();
         this.nameListFile = new File(this.testDir, "names.txt");
         this.frequenciesFile = new File(this.testDir, "frequencies.txt");
-        this.frequenciesFile.createNewFile();
         try (
             BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.nameListFile), "UTF-8"))
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.nameListFile), "UTF-8"));
+            BufferedWriter frequenciesWriter =
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.frequenciesFile), "UTF-8"))
         ) {
             for (final String name : MainTest.NAMES) {
                 writer.write(name);
-                writer.newLine();
+                writer.write("\n");
             }
+            frequenciesWriter.write("Alice,2\nBob,3\nCharly,1\n");
         }
     }
 

@@ -128,16 +128,19 @@ public class Main {
                 writer.newLine();
             }
         } else {
+            final FrequencyMap frequencies;
+            final NameList list;
             try (
                 final BufferedReader namesReader = Main.getNamesReader(space);
                 final BufferedReader frequenciesReader = Main.getFrequenciesReader(space);
-                final BufferedWriter frequenciesWriter = Main.getFrequenciesWriter(space);
             ) {
-                final FrequencyMap frequencies = new FrequencyMap(frequenciesReader);
-                final NameList list = new NameList(namesReader);
-                writer.write(list.getRandomName(frequencies));
-                writer.newLine();
-//                list.saveFrequencies(frequenciesWriter);
+                frequencies = new FrequencyMap(frequenciesReader);
+                list = new NameList(namesReader);
+            }
+            writer.write(list.getRandomName(frequencies));
+            writer.newLine();
+            try (final BufferedWriter frequenciesWriter = Main.getFrequenciesWriter(space)) {
+                frequencies.save(frequenciesWriter);
             }
         }
     }

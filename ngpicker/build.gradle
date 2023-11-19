@@ -23,7 +23,7 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    baseName = 'nameandgrouppicker'
+    archiveBaseName = 'nameandgrouppicker'
 }
 
 tasks.named('test') {

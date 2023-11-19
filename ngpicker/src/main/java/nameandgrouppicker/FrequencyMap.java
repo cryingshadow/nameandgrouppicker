@@ -37,4 +37,13 @@ public class FrequencyMap extends LinkedHashMap<String, Integer> {
         this.merge(name, 1, Integer::sum);
     }
 
+    public void save(final BufferedWriter writer) throws IOException {
+        for (final Map.Entry<String, Integer> entry : this.entrySet()) {
+            writer.write(entry.getKey());
+            writer.write(",");
+            writer.write(entry.getValue().toString());
+            writer.write("\n");
+        }
+    }
+
 }
